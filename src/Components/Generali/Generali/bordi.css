@@ -1,0 +1,37 @@
+
+.container-fluid{
+    box-shadow: 10px 12px 14px 4px;
+    border-radius: 10px;
+}
+
+#mostraform{
+    border-radius: 0%;
+    border-bottom-left-radius:30px;
+    border-bottom-right-radius:30px;
+    box-shadow:0px;
+    align-content: center;
+    
+}
+
+.card{
+    box-shadow: 6px 8px 10px 1px;
+    border-radius: 10px;
+}
+
+#lista{
+    border-radius: 10px;
+}
+
+#card{
+    margin-top: 40px;
+   
+}
+
+#colonna{
+    max-width: 360px;
+}
+
+#paginazione{
+    text-align:center;
+}
+
