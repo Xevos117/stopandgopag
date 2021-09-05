@@ -12,7 +12,9 @@ let bottonecliccato
 
 function ListaPrenotazioni(){
   const [show, setShow] = useState(false);
-  const [isloading, setLoading] = useState(true);       
+  const [isloading, setLoading] = useState(true);
+  
+  
   function modifica(){
     window.location.href="/SchermataModificaPrenotazione"
   }
@@ -54,7 +56,14 @@ if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
 
   useEffect(()=>{
     let idutente=JSON.parse(window.sessionStorage.getItem("utente")).IdUserid
-    axios.post("http://localhost:5000/prenotazioni/richiediprenotazioni",{id:idutente})
+    let dati
+    if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Amministratore"){
+      dati={id:"%"}
+    }
+    else{
+      dati={id:idutente}
+    }
+    axios.post("http://localhost:5000/prenotazioni/richiediprenotazioni",dati)
     .then((res)=>{
       console.log(res)
       mezzi=res.data
@@ -75,7 +84,7 @@ if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
         <h1 style={{paddingLeft:30, paddingTop:40, paddingBottom:5}}>Lista Prenotazioni</h1>
 
         <div style={{paddingLeft:30}}>        
-          <Button href="/SchermataInserimentoPrenotazioni">Inserisci</Button>       
+          <Button href="/">Inserisci</Button>       
         </div>
 
         <Tabella 
