@@ -51,7 +51,7 @@ import '../Generali/Generali/bordi.css'
         <div style={{height:800, paddingTop:100}}>
         <div className="container-fluid" style={{maxWidth:400, paddingBottom:10, alignContent:'center', paddingTop:10,backgroundColor:"#d6d6f5" }}>
             <div className="TitoloForm" style={{backgroundColor:"blue", textAlign:"center", color:"white", borderRadius:10}}>
-            <h2>Ricerca il tuo veicolo</h2>
+            <h2>Ricerca il tuo veicoloa</h2>
             </div>
             <Form  id="form">
     <Row className="mb-3">
