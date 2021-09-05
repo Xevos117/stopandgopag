@@ -53,6 +53,27 @@ function SchermataModificaPrenotazione(){
         } 
     }
 
+    function handleSubmit(id){
+        console.log(id)
+        const datiDestinazione={
+            idPrenotazione:window.sessionStorage.getItem("idPrenotazione"),
+            parcheggioritiro:document.getElementById("opzioniritiro").value,
+            parcheggioconsegna:document.getElementById("opzioniconsegna").value,
+            indirizzodiverso:document.getElementById("Indirizzodiverso").value,
+            cap:document.getElementById("Cap").value,
+            citta:document.getElementById("Citta").value
+        }
+        console.log(datiDestinazione)
+        axios.post("http://localhost:5000/prenotazioni/modificacorsa",datiDestinazione)
+        .then((res)=>{
+            console.log(res)
+            window.sessionStorage.removeItem("idPrenotazione")
+            window.location.href="/SchermataGestionePrenotazioni"
+        }).catch((err)=>{
+            console.log(err)
+        })
+    }
+
     useEffect(()=>{
         axios.post("http://localhost:5000/mezzi/recuperaparcheggi")
         .then((res)=>{
@@ -72,7 +93,7 @@ function SchermataModificaPrenotazione(){
         <div class="container" style={{maxWidth:400, paddingTop:20}}>
         <Form>
 
-        <Form.Group className="mb-3" controlId="formBasicEmail" >
+        <Form.Group className="mb-3" >
             <Form.Label ><strong>Parcheggio/Stallo ritiro</strong></Form.Label>
                 <select className="form-select mb3" id="opzioniritiro">
                 
@@ -103,7 +124,7 @@ function SchermataModificaPrenotazione(){
             </div>
         </Collapse>
     </Form.Group>    
-    <Button variant="primary" onClick={console.log("modifica")}>
+    <Button variant="primary" onClick={(id)=>{handleSubmit(id)}}>
         Modifica
     </Button>    
     </Form>

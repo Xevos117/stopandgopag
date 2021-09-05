@@ -15,7 +15,10 @@ function ListaPrenotazioni(){
   const [isloading, setLoading] = useState(true);
   
   
-  function modifica(){
+  function modifica(id){
+    console.log(id)
+    let c=document.getElementById(id)
+    window.sessionStorage.setItem("idPrenotazione",document.getElementById("DatoTabella0riga"+c.parentNode.parentNode.id).getInnerHTML())
     window.location.href="/SchermataModificaPrenotazione"
   }
 
@@ -92,7 +95,7 @@ if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
         righe={array}
         seleziona={true}
         modificaelimina={true}
-        modifica={()=>{modifica()}}
+        modifica={(id)=>{modifica(id)}}
         elimina={(id)=>{setShow(true);bottonecliccato=id}}
         selezionafunction={seleziona}
         clientemode={cliente}
