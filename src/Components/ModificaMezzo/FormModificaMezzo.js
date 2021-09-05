@@ -26,9 +26,9 @@ function FormRegistrazioneMezzo(){
                 targa:  document.getElementById("targa").value,
                 modello:  document.getElementById("modello").value,
                 alimentazione:  document.getElementById("alimentazione").value,
-                colore:  document.getElementById("colore").value,
+                categoria:  document.getElementById("categoria").value,
                 numPosti:  document.getElementById("NumPosti").value,
-                anno:  document.getElementById("cambioautomatico").checked,
+                cambio:  document.getElementById("cambio").checked,
                 optional:  document.getElementById("optional").value,
                 descrizioneMezzo:  document.getElementById("descrizioneMezzo").value,
                 parc:  document.getElementById("parcheggio").value,
@@ -97,7 +97,7 @@ function FormRegistrazioneMezzo(){
             console.log(datiMezzo)
             let targaselezionata=window.sessionStorage.getItem("targaselezionata")
             console.log(targaselezionata)
-            let tipologia, targa, modello, alimentazione, colore, numPosti, cambio, optional, descrizioneMezzo, parc, tariffaOraria, sovraprezzo, fotoMezzo
+            let tipologia, targa, modello, alimentazione, categoria, numPosti, cambio, optional, descrizioneMezzo, parc, tariffaOraria, sovraprezzo, fotoMezzo
             for(let i=0;i<datiMezzo.length;i++){
                 if(datiMezzo[i].TargaMatricola===targaselezionata){
                     console.log(i)
@@ -109,8 +109,8 @@ function FormRegistrazioneMezzo(){
                     modello.value=datiMezzo[i].Modello
                     alimentazione=document.getElementById("alimentazione")
                     alimentazione.value=datiMezzo[i].Alimentazione
-                    colore=document.getElementById("categoria")
-                    colore.value=datiMezzo[i].Categoria
+                    categoria=document.getElementById("categoria")
+                    categoria.value=datiMezzo[i].Categoria
                     numPosti=document.getElementById("NumPosti")
                     numPosti.value=datiMezzo[i].Posti
                     cambio=document.getElementById("cambio")

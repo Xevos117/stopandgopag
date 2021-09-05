@@ -284,7 +284,22 @@ function calcoloNumeroPagine(lunghezzaArray){
       window.location.reload()
   }
 
-   
+  function handleSubmit(){
+    const datiPrenotazione={
+        idCliente:JSON.parse(window.sessionStorage.getItem("datiprenotazione").idCliente),
+        dataOraInizio:document.getElementById("formGridDataInizio").value+"T"+document.getElementById("formGridOraInizio").value,
+        dataOraFine:document.getElementById("formGridDataFine").value+"T"+document.getElementById("formGridOraFine").value,
+        tipologiaMezzo:document.getElementById("ruolo").value,
+        autista:document.getElementById("autista").checked,
+        categoria:"%",
+        passeggeri:"%",
+        cambio:"%",
+    }
+    console.log(datiPrenotazione)
+    let datiprenotazione=JSON.stringify(datiPrenotazione)
+    window.sessionStorage.setItem("datiprenotazione",datiprenotazione)    
+    window.location.href="/SchermataRisultati"
+}
 
     useEffect(()=>{
       let datiPrenotazione=JSON.parse(window.sessionStorage.getItem("datiprenotazione"))
@@ -370,7 +385,7 @@ function calcoloNumeroPagine(lunghezzaArray){
         />
       </Col>
       <Col>
-      <Button variant="primary" style={{marginTop:10, marginLeft:30}} size="lg">
+      <Button variant="primary" style={{marginTop:10, marginLeft:30}} onClick={()=>{handleSubmit()}} size="lg">
         Ricerca
       </Button>
       </Col>

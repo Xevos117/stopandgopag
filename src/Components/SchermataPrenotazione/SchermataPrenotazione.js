@@ -3,11 +3,21 @@ import {useState,useEffect} from 'react'
 import PopupSuccesso from "../Generali/Generali/PopupSuccesso"
 const axios=require('axios')
 
-let macchine=JSON.parse(window.sessionStorage.getItem("specificheprenotazione"))
   let stringabottone="Dettagli pagamento"
   let stringariepilogo="Prenotazione"
   let tariffa
 function SchermataPrenotazione(){
+    if(!JSON.parse(window.sessionStorage.getItem("utente"))){
+        alert("Effettua l'accesso per continuare")
+        window.location.href="/Login"
+    }
+    else if(!JSON.parse(window.sessionStorage.getItem("specificheprenotazione"))){
+        window.location.href="/"
+    }
+
+    let macchine=JSON.parse(window.sessionStorage.getItem("specificheprenotazione"))
+    console.log(macchine)
+
     const [open, setOpen] = useState(true); //primoform
     const [open2, setOpen2] = useState(false);//secondoform
     const [open3, setOpen3] = useState(false);//indirizzodiverso
@@ -101,7 +111,7 @@ function SchermataPrenotazione(){
         let prova2=new Date(dati[0].dataOraFine)
         let giorni=prova2.getDate()-prova.getDate()
         console.log(giorni)
-        //let mese=(prova2.getMonth()+1)-(prova.getMonth()+1)
+        let mese=(prova2.getMonth()+1)-(prova.getMonth()+1)
         let anno=(prova2.getFullYear()-prova2.getFullYear())
         let differenzaore=prova2.getHours()-prova.getHours()
         if(giorni>=1){
@@ -109,11 +119,13 @@ function SchermataPrenotazione(){
             console.log(dati[1].Tariffa)
             return ore*dati[1].Tariffa
         }
-        else{
-            return differenzaore
+        else if(mese>=1){
+            let ore=30*24+differenzaore
+            return ore/2*dati[1].Tariffa
         }
-        console.log(anno)
-        console.log(prova.toLocaleString().substr(10,11))
+        else{
+            return differenzaore*dati[1].Tariffa
+        }        
     }
 
     function bottoneform(){
@@ -137,8 +149,7 @@ function SchermataPrenotazione(){
 
     function confermaPrenotazione(){
         let specifiche=JSON.parse(window.sessionStorage.getItem("specificheprenotazione"))
-        let nomeparcheggioritiro=document.getElementById("opzioniritiro")
-        const datiPrenotazione={
+        let datiPrenotazione={
             idutente:JSON.parse(window.sessionStorage.getItem("utente")).IdUserid,
             idmezzo:specifiche[1].IdMezzo,
             idparcheggioritiro:document.getElementById("opzioniritiro").value,
@@ -158,7 +169,11 @@ function SchermataPrenotazione(){
             nomeparcheggioritiro:document.getElementById("opzioniritiro").selectedOptions[0].outerText,
             nomeparcheggioconsegna:document.getElementById("opzioniconsegna").selectedOptions[0].outerText,
             totale:tariffa
-
+        }
+        if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==='Amministratore'){
+            datiPrenotazione.idutente=specifiche[0].idCliente
+            datiPrenotazione.idpagamento=null
+            console.log("cambio id")
         }
         console.log(datiPrenotazione)
         axios.post("http://localhost:5000/prenotazioni/inserisciprenotazione",datiPrenotazione)
@@ -176,6 +191,8 @@ function SchermataPrenotazione(){
         window.location.href="/SchermataGestionePrenotazioni"
     }
 
+    
+
     function assegnaAutista(datiPrenotazione){
         console.log("qui")
         axios.post("http://localhost:5000/prenotazioni/assegnazioneautisti",datiPrenotazione)
@@ -188,7 +205,6 @@ function SchermataPrenotazione(){
 
     useEffect(()=>{
         recuperoParcheggi()
-        calcoloTariffa()
         tariffa=calcoloTariffa()
     },[])
 
@@ -230,7 +246,6 @@ function SchermataPrenotazione(){
                     <Collapse in={open3}>
                     <p><strong>Tariffa destinazione diversa </strong>{macchine[1].TariffaSovrapprezzo}€</p> 
                     </Collapse>
-                    <p><strong>Durata corsa</strong>1 giorno</p> 
                 </div>
                 </Collapse>               
                 </Col>
@@ -303,12 +318,12 @@ function SchermataPrenotazione(){
                     <Collapse in={macchine[0].autista}>
                         <Form.Group as={Col} controlId="mancia">
                             <Form.Label><strong>Mancia autista</strong></Form.Label>
-                            <Form.Control id="mancia" type="number" placeholder="" value="0" min="0"/>
+                            <Form.Control id="mancia" type="number" placeholder=""  min="0" /*onChange={()=>{tariffa=tariffa+parseInt(document.getElementById("mancia").getInnerHTML()); document.getElementById("costo").innerHTML=tariffa}}*//>
                         </Form.Group>
                     </Collapse>
                     
                     </Form>
-                    <p><strong style={{fontSize:24}}>Totale: {tariffa}€</strong></p>
+                    <p><strong  style={{fontSize:24}}>Totale: <strong id="costo">{tariffa}</strong>€</strong></p>
                     <Button variant="success" size="lg" onClick={()=>setShow(true)} style={{marginBottom:10}}>
                         Paga ora
                     </Button>

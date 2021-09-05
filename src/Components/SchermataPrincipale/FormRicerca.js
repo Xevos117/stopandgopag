@@ -1,12 +1,14 @@
-import {Row, Form, Button, Col} from "react-bootstrap"
+import {Row, Form, Button, Col, Collapse} from "react-bootstrap"
 //import {isValidElement, useState, setState} from 'react'
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 //import $ from "jquery"
 //import Feedback from "react-bootstrap/esm/Feedback";
 import '../Generali/Generali/bordi.css'
     function FormRicerca(){
 
+        const [show, setShow]=useState(false)       
+        
         function abilitaAutista(){
             console.log("Cambiato")
             let valore=document.getElementById("ruolo").value
@@ -21,6 +23,7 @@ import '../Generali/Generali/bordi.css'
 
         function handleSubmit(){
             const datiPrenotazione={
+                idCliente:document.getElementById("idCliente").value,
                 dataOraInizio:document.getElementById("formGridDataInizio").value+"T"+document.getElementById("formGridOraInizio").value,
                 dataOraFine:document.getElementById("formGridDataFine").value+"T"+document.getElementById("formGridOraFine").value,
                 tipologiaMezzo:document.getElementById("ruolo").value,
@@ -43,7 +46,12 @@ import '../Generali/Generali/bordi.css'
         }
 
         useEffect(()=>{
-            abilitaAutista()            
+            abilitaAutista() 
+            if(JSON.parse(window.sessionStorage.getItem("utente"))){
+                if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Amministratore"){
+                    setShow(true)
+                }
+            }        
         },[])
 
     return(
@@ -54,6 +62,15 @@ import '../Generali/Generali/bordi.css'
             <h2>Ricerca il tuo veicolo</h2>
             </div>
             <Form  id="form">
+                <Collapse in={show}>
+                    <div>
+                    <Form.Group as={Col} controlId="idCliente" >
+                    <Form.Label><strong>Id Cliente</strong></Form.Label>
+                    <Form.Control type="number" min="1"/>
+                    </Form.Group>
+
+                    </div>
+                </Collapse>
     <Row className="mb-3">
         <Form.Group as={Col} controlId="formGridDataInizio" >
         <Form.Label><strong>Data Inizio</strong></Form.Label>
