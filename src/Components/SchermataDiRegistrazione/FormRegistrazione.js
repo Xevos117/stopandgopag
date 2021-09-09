@@ -14,29 +14,26 @@ function FormRegistrazione(){
     const [show, setShow] = useState(false);
     const [show2, setShow2]=useState(false)
 
-    const setField = (field, value) => {
-      setForm({
-        ...form,
-        [field]: value
-      })
+    if(JSON.parse(window.sessionStorage.getItem("utente"))){
+        if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
+            window.location.href="/"
+        }
+        else if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Amministratore"){
+            window.location.href="/SchermataPrincipaleAmministratore"
+        }
+        else if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Autista"){
+            window.location.href="/SchermataPrincipaleAutista"
+        }
+        else{
+            window.location.href="/SchermataPrincipaleGestoreParcheggio"
+        }
     }
+
+   
   
-    const findFormErrors = () =>{
-      const {pass1, pass2}=form
-      const newErrors={}
-      if(pass1!==pass2){
-        newErrors.pass='Le password non coincidono'
-        console.log("password non coincidenti")
-      }
-      return newErrors
-    }  
-
 function handleSubmit(event){
-    event.preventDefault();
     var form = document.getElementById("form");
-
     if (form.checkValidity() === true && verificaPass()===true && confrontoDate()===true) {
-        console.log("QUI")
         let crypass= crypto.createHash('sha512');
         crypass.update(document.getElementById("formGridPassword").value); // criptiamo la password
         let passEsa=crypass.digest('hex');
@@ -55,10 +52,10 @@ function handleSubmit(event){
             numCI: document.getElementById("formGridNumeroCartaIdentita").value,
             numPat: document.getElementById("formGridNumeroPatente").value,
             numTel: document.getElementById("formGridNumeroTelefono").value,
-            foto: document.getElementById("formFileFoto").value,
             pc: document.getElementsByClassName("form-check-input")[0].checked,
             group: "Cliente"
         };
+        
 
         try{
             axios.post("http://localhost:5000/utente/registraCliente", clienteReg)
@@ -81,30 +78,40 @@ function handleSubmit(event){
         }
 
     }
+    else{
+        setValidated(true)
+        console.log("Form non valido")
+        event.stopPropagation()
+    }
 
 }
 
 function verificaPass() {
     let pass1= document.getElementById("formGridPassword").value
     let pass2= document.getElementById("formGridControlloPassword").value 
-    
+    console.log("Inserire una password che contenga almeno 8 caratteri maiuscoli, minuscoli e numerici")
+    let regexp=new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$");
+    if(regexp.test(pass1)===false){
+        errore="Password non valida. Inserire almeno 8 caratteri, una lettera maiuscola e un numero"
+        setShow(true)
+        return false
+    }
     if(pass1===pass2){
         console.log("password coincidenti") 
         //alert("Password coincidenti")
         return true              
     }
-
     else{
        // document.getElementById('formGridPassword').style.borderColor="red";
        // document.getElementById('formGridControlloPassword').style.borderColor="red";
         
-        console.log(document.getElementById("formGridPassword").style)
-        
-        alert("Password non coincidenti")
+       errore="Password non coincidenti"
+       setShow(true)        
         console.log("password errate")
         return false
     }
 };
+
 
 
 function confrontoDate(){
@@ -116,8 +123,8 @@ function confrontoDate(){
     }  
     else{
         console.log("Data errata")
-        alert("La data deve essere precedente a quella odierna")
-
+        errore="La data deve essere precedente a quella odierna"
+        setShow(true)
         return false;
     }
     
@@ -129,7 +136,7 @@ function confrontoDate(){
             <div className="TitoloForm" style={{backgroundColor:"blue", textAlign:"center", color:"white", borderRadius:10}}>
             <h2>Registrati</h2>
             </div>
-            <Form validate onSubmit={handleSubmit} id="form">
+            <Form validated={validated} onSubmit={handleSubmit} id="form">
     <Row className="mb-3">
         <Form.Group as={Col} controlId="formGridNome" >
         <Form.Label><strong>Nome</strong></Form.Label>
@@ -146,6 +153,9 @@ function confrontoDate(){
         <Form.Group as={Col} controlId="formGridEmail">
         <Form.Label><strong>Email</strong></Form.Label>
         <Form.Control type="email" placeholder="Inserisci email" pattern="^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$" required/>
+        <Form.Control.Feedback type="invalid">
+             Inserire una mail valida. Esempio: example@example.it
+        </Form.Control.Feedback>
         </Form.Group>
 
         
@@ -155,10 +165,8 @@ function confrontoDate(){
         <Form.Group as={Col} controlId="formGridPassword">
         <Form.Label><strong>Password</strong></Form.Label>
         <InputGroup hasValidation>
-        <Form.Control type="password" placeholder="Password" onChange={e=>setField('pass1', e.target.value)} isInvalid={!!errors.pass} /*pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$"*/ required/>
-        <Form.Control.Feedback type="invalid">
-             {errors.name}
-        </Form.Control.Feedback>
+        <Form.Control type="password" placeholder="Password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$" required/>
+        
         </InputGroup>                  
         </Form.Group>
        
@@ -166,9 +174,9 @@ function confrontoDate(){
         <Form.Group as={Col} controlId="formGridControlloPassword" >
         <Form.Label><strong>Conferma password</strong></Form.Label>
         <InputGroup hasValidation>
-        <Form.Control type="password" placeholder="Password" onChange={e=>setField('pass2', e.target.value)} required/>
+        <Form.Control type="password" placeholder="Password"  required/>
         <Form.Control.Feedback type="invalid">
-             Inserire una password che contenga almeno 8 caratteri maiuscoli, minuscoli e numerici
+             Almeno 8 caratteri maiuscoli, minuscoli e numerici
         </Form.Control.Feedback>
         </InputGroup>
         </Form.Group>
@@ -177,25 +185,25 @@ function confrontoDate(){
 
     <Form.Group className="mb-3" controlId="formGridAddress1">
         <Form.Label><strong>Indirizzo</strong></Form.Label>
-        <Form.Control placeholder="Via Mario rossi, 4" />
+        <Form.Control placeholder="Via Mario rossi, 4" required/>
     </Form.Group>
 
 
     <Row className="mb-3">
         <Form.Group as={Col} controlId="formGridCity">
         <Form.Label><strong>Città</strong></Form.Label>
-        <Form.Control />
+        <Form.Control required/>
         </Form.Group>
 
        
         <Form.Group as={Col} controlId="formGridCap">
         <Form.Label><strong>Cap</strong></Form.Label>
-        <Form.Control />
+        <Form.Control required/>
         </Form.Group>
     </Row>
 
         <Form.Label><strong>Regione</strong></Form.Label>
-        <select className="form-select mb3" id="regione">
+        <select className="form-select mb3" id="regione" required>
         <option selected="selected" value=""></option>
         <option value="Abruzzo">Abruzzo</option>
         <option value="Basilicata">Basilicata</option>
@@ -241,7 +249,7 @@ function confrontoDate(){
 
     <Form.Group as={Col} controlId="formGridNumeroCartaIdentita">
         <Form.Label><strong>Numero carta identità</strong></Form.Label>
-        <Form.Control type="text" placeholder="Inserisci il numero della tua carta d'identità" required/>
+        <Form.Control type="text" pattern="[0-9]{0,10}" placeholder="Inserisci il numero della tua carta d'identità" required/>
     </Form.Group>
 
     </Row>
@@ -250,7 +258,8 @@ function confrontoDate(){
 
     <Form.Group as={Col} controlId="formGridNumeroPatente">
         <Form.Label><strong>Numero patente</strong></Form.Label>
-        <Form.Control type="text" placeholder="Inserisci il numero della tua patente" />
+        <Form.Control type="text" pattern="[0-9]{0,10}" placeholder="Inserisci il numero della tua patente" />
+        <Form.Control.Feedback type="invalid">Inserisci un numero patente corretto (solo valori numerici, 10 max)</Form.Control.Feedback>
     </Form.Group>
 
     </Row>
@@ -258,23 +267,19 @@ function confrontoDate(){
 
     <Form.Group as={Col} controlId="formGridNumeroTelefono">
         <Form.Label><strong>Numero di telefono</strong></Form.Label>
-        <Form.Control type="tel" /*pattern="[0-9]{9,14}$"*/ placeholder="Inserisci il tuo numero di telefono" required/>
+        <Form.Control type="tel" pattern="[0-9]{9,14}$" placeholder="Inserisci il tuo numero di telefono" required/>
     </Form.Group>
 
     </Row>
     
-    <Row className="mb-3">
-        <Form.Group controlId="formFileFoto" className="mb-3">
-            <Form.Label><strong>Inserire allegato propria foto</strong></Form.Label>
-            <Form.Control type="file" size="sm" />
-        </Form.Group>
-    </Row>
+    
  
     <Form.Group className="mb-3" id="formGridCheckboxPC" style={{paddingTop:5}}>
-        <Form.Check type="checkbox" label="Dichiaro di possedere un dispositivo portatile" />
+        <Form.Check type="checkbox" label="Dichiaro di possedere un dispositivo portatile" required/>
+        <Form.Control.Feedback type="invalid">E' necessario avere un dispositivo portatile</Form.Control.Feedback>        
     </Form.Group>
 
-    <Button variant="primary" type="submit">
+    <Button variant="primary" type="button" onClick={handleSubmit}>
         Registrati
     </Button>
     </Form>

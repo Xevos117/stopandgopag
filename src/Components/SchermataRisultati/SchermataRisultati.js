@@ -47,10 +47,13 @@ function calcoloNumeroPagine(lunghezzaArray){
 }
 
   const [show, setShow] = useState(false);
-  const [showerrore, setShowErrore]=useState(false)
+  const [showerrore, setShowErrore]=useState(false)//POPUP ERRORE RICERCA
+  const [showerrore2, setShowErrore2]=useState(false)//POPUP ESEGUI ACCESSO
+  const [errore, setErrore]=useState()
   const handleClose = () => setShow(false);
 
     function precompilaform(){
+      
       let datiprenotazione=JSON.parse(window.sessionStorage.getItem("datiprenotazione"))
       document.getElementById("formGridDataInizio").value=datiprenotazione.dataOraInizio.substr(0,10)
       document.getElementById("formGridDataFine").value=datiprenotazione.dataOraFine.substr(0,10)
@@ -60,14 +63,10 @@ function calcoloNumeroPagine(lunghezzaArray){
       document.getElementById("autista").checked=datiprenotazione.autista
     }
 
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    
 
-    async function precompilafiltri(){
-      await sleep(500);
+     function precompilafiltri(){
       let datiprenotazione=JSON.parse(window.sessionStorage.getItem("datiprenotazione"))
-
       
       if(datiprenotazione.categoria!=='%'){
         document.getElementById("filtrocategoria").value=datiprenotazione.categoria
@@ -126,11 +125,41 @@ function calcoloNumeroPagine(lunghezzaArray){
     }
 
     function prenotazione(id){
-      let divid=document.getElementById(id).parentNode.parentNode.parentNode.parentNode.id
-      specificheprenotazione[0]=JSON.parse(window.sessionStorage.getItem("datiprenotazione"))
-      specificheprenotazione[1]=macchine[divid]
-      window.sessionStorage.setItem("specificheprenotazione",JSON.stringify(specificheprenotazione))
-      window.location.href="/SchermataPrenotazione"
+      if(!JSON.parse(window.sessionStorage.getItem("utente"))){
+        setShowErrore2(true)
+        return
+      }
+      let datiprenotazione=JSON.parse(window.sessionStorage.getItem("datiprenotazione"))
+
+      if((datiprenotazione.tipologiaMezzo==="Auto" && datiprenotazione.autista===false) || datiprenotazione.tipologiaMezzo==="Moto"){
+        axios.post("http://localhost:5000/utente/richiedinumeropatente",{id:JSON.parse(window.sessionStorage.getItem("utente")).IdUserid})
+        .then((res)=>{
+          console.log(res.data[0].Patente)
+          if(res.data[0].Patente===null || res.data[0].Patente===""){
+            setErrore("Nessuna patente inserita. Si può comunque noleggiare un auto richiedendo un autista, altrimenti provvedere ad inserirne una nella schermata dati personali")
+            setShowErrore(true)
+            return
+          }
+          else{
+            let divid=document.getElementById(id).parentNode.parentNode.parentNode.parentNode.id
+            specificheprenotazione[0]=JSON.parse(window.sessionStorage.getItem("datiprenotazione"))
+            specificheprenotazione[1]=macchine[divid]
+            window.sessionStorage.setItem("specificheprenotazione",JSON.stringify(specificheprenotazione))
+            window.location.href="/SchermataPrenotazione"
+          }
+          
+        })
+      }
+      else{
+        let divid=document.getElementById(id).parentNode.parentNode.parentNode.parentNode.id
+        specificheprenotazione[0]=JSON.parse(window.sessionStorage.getItem("datiprenotazione"))
+        specificheprenotazione[1]=macchine[divid]
+        window.sessionStorage.setItem("specificheprenotazione",JSON.stringify(specificheprenotazione))
+        window.location.href="/SchermataPrenotazione"
+      }
+      console.log("Qui")
+
+      
     }
 
 
@@ -140,6 +169,7 @@ function calcoloNumeroPagine(lunghezzaArray){
       console.log(macchine[0])
       console.log(flag2)
       if(macchine.length===0){
+        setErrore("Nessun risultato trovato. Cambiare parametri di ricerca")
         setShowErrore(true)
         return
       }
@@ -168,7 +198,28 @@ function calcoloNumeroPagine(lunghezzaArray){
               divcard.style="width:18rem, color-background:grey"
               divcard.id=i              
               img=document.createElement("img")
-              img.src="../images/opelCrossland.png"
+              if(macchine[i].Modello==="Opel Crossland X"){
+                img.src="../images/opelCrossland.png"
+              }
+              else if(macchine[i].Modello==="Fiat Panda"){
+                img.src="../images/fiatPanda.png"
+              }
+              else if(macchine[i].Modello==="Opel Corsa"){
+                img.src="../images/opelCorsa.png"
+              }
+              else if(macchine[i].IdTipoMezzo==="Moto"){
+                img.src="../images/moto.png"
+              }
+              else if(macchine[i].IdTipoMezzo==="Monopattino"){
+                img.src="../images/monopattino.png"
+              }
+              else if(macchine[i].IdTipoMezzo==="Bicicletta"){
+                img.src="../images/bicicletta.png"
+              }
+              else{
+                img.src="../images/volkswagenPolo.png"
+              }
+
               img.className="card-img-top"
               cardbody=document.createElement("div")
               cardbody.className="card-body"
@@ -285,8 +336,9 @@ function calcoloNumeroPagine(lunghezzaArray){
   }
 
   function handleSubmit(){
-    const datiPrenotazione={
-        idCliente:JSON.parse(window.sessionStorage.getItem("datiprenotazione").idCliente),
+    
+    let datiPrenotazione={
+        idCliente:JSON.parse(window.sessionStorage.getItem("datiprenotazione")).idCliente,
         dataOraInizio:document.getElementById("formGridDataInizio").value+"T"+document.getElementById("formGridOraInizio").value,
         dataOraFine:document.getElementById("formGridDataFine").value+"T"+document.getElementById("formGridOraFine").value,
         tipologiaMezzo:document.getElementById("ruolo").value,
@@ -295,6 +347,14 @@ function calcoloNumeroPagine(lunghezzaArray){
         passeggeri:"%",
         cambio:"%",
     }
+
+
+    if(JSON.parse(window.sessionStorage.getItem("utente"))){
+      if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
+        datiPrenotazione.idCliente=JSON.parse(window.sessionStorage.getItem("utente")).IdUserid
+      }
+    }
+
     console.log(datiPrenotazione)
     let datiprenotazione=JSON.stringify(datiPrenotazione)
     window.sessionStorage.setItem("datiprenotazione",datiprenotazione)    
@@ -333,7 +393,7 @@ function calcoloNumeroPagine(lunghezzaArray){
       <Form>                   
       <Row className="mb-3">
       <Col style={{maxWidth:150, marginTop:50}}>
-        <Button variant="primary" onClick={()=>{setShow(true);precompilafiltri()}} style={{marginTop:10}}>
+        <Button variant="primary" onClick={()=>{setShow(true)}} style={{marginTop:10}}>
         Mostra filtri
       </Button>
         </Col>
@@ -385,7 +445,7 @@ function calcoloNumeroPagine(lunghezzaArray){
         />
       </Col>
       <Col>
-      <Button variant="primary" style={{marginTop:10, marginLeft:30}} onClick={()=>{handleSubmit()}} size="lg">
+      <Button variant="primary" style={{marginTop:10, marginLeft:30}} onClick={handleSubmit} size="lg">
         Ricerca
       </Button>
       </Col>
@@ -408,20 +468,13 @@ function calcoloNumeroPagine(lunghezzaArray){
         </div>
    
 
-      <Offcanvas show={show} onHide={handleClose} backdrop={false} style={{backgroundColor:"#d6d6f5", boxShadow:"10px 12px 14px 4px"}}>
+      <Offcanvas show={show} onHide={handleClose} onEntered={precompilafiltri} backdrop={false} style={{backgroundColor:"#d6d6f5", boxShadow:"10px 12px 14px 4px"}}>
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>Filtri</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <Form>
-            <Form.Group>
-            <Form.Label><strong>Ordina per</strong></Form.Label>
-              <Form.Select aria-label="ordina">
-              <option value="1">Prezzo</option>
-              <option value="2">Bagagliaio</option>
-              <option value="3">Passeggeri</option>
-             </Form.Select>
-            </Form.Group>
+            
 
             <Form.Group>
               <Form.Label><strong>Categoria</strong></Form.Label>
@@ -473,8 +526,13 @@ function calcoloNumeroPagine(lunghezzaArray){
         </div>
         <PopupErrore
             show={showerrore}
-            errore={"Nessun risultato trovato. Cambiare parametri di ricerca"}
+            errore={errore}
             onHide={()=>{setShowErrore(false)}}
+        />
+        <PopupErrore
+            show={showerrore2}
+            errore={"Esegui l'accesso prima di continuare"}
+            onHide={()=>{setShowErrore2(false); window.location.href="/Login"}}
         />
       </div>
 

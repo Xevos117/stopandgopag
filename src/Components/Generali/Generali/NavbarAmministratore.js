@@ -1,6 +1,8 @@
 import {Navbar, Container,Nav} from "react-bootstrap";
 import PopupSuccesso from "./PopupSuccesso";
 import { useState } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 const axios=require('axios')
 function NavbarAmministratore(){
 
@@ -19,18 +21,18 @@ function NavbarAmministratore(){
 
     return(
         <>
-  <Navbar bg="dark" variant="dark">
+  <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
     <Container>
     <Navbar.Brand href="/SchermataPrincipaleAmministratore">StopAndGoPag</Navbar.Brand>
+    <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+    <Navbar.Collapse id="responsive-navbar-nav">
     <Nav className="me-auto">
       <Nav.Link href="/ListaMezzi">Gestione mezzi</Nav.Link>
       <Nav.Link href="/ListaDipendenti">Gestrione personale</Nav.Link>
       <Nav.Link href="/ListaClienti">Gestrione clienti</Nav.Link>
       <Nav.Link href="/SchermataGestionePrenotazioni">Gestione prenotazioni</Nav.Link>
       <Nav.Link href="/SchermataPersonaleUtente">Dati Personali</Nav.Link>
-
-    </Nav>   
-    
+    </Nav>       
   <Nav>
     
       <Nav.Link eventKey={2} onClick={logout}>
@@ -40,7 +42,7 @@ function NavbarAmministratore(){
         </svg>
       </Nav.Link>
     </Nav>
-
+  </Navbar.Collapse>
     </Container>
     </Navbar>
     <PopupSuccesso

@@ -2,13 +2,17 @@ import {Row, Form, Button, Col, Collapse} from "react-bootstrap"
 //import {isValidElement, useState, setState} from 'react'
 import axios from "axios";
 import { useEffect, useState } from "react";
+import PopupErrore from "../Generali/Generali/PopupErrore";
+import PopupSuccesso from "../Generali/Generali/PopupSuccesso";
 //import $ from "jquery"
 //import Feedback from "react-bootstrap/esm/Feedback";
 import '../Generali/Generali/bordi.css'
     function FormRicerca(){
-
         const [show, setShow]=useState(false)       
-        
+        const [showerrore, setShowErrore]= useState(false)
+        const [errore, setErrore]=useState()
+        const [show2, setShow2]=useState(false)
+
         function abilitaAutista(){
             console.log("Cambiato")
             let valore=document.getElementById("ruolo").value
@@ -22,6 +26,20 @@ import '../Generali/Generali/bordi.css'
         }
 
         function handleSubmit(){
+            let datainizio=new Date(document.getElementById("formGridDataInizio").value+"T"+document.getElementById("formGridOraInizio").value)
+            let datafine=new Date(document.getElementById("formGridDataFine").value+"T"+document.getElementById("formGridOraFine").value)
+
+            if(datafine<datainizio){
+                setErrore("La data di consegna non può essere antecedente a quella di ritiro del mezzo!")
+                setShowErrore(true)
+                return
+            }
+            else if(datainizio<new Date()){
+                setErrore("La data di inizio non può essere antecedente a quella odierna!")
+                setShowErrore(true)
+                return
+            }
+
             const datiPrenotazione={
                 idCliente:document.getElementById("idCliente").value,
                 dataOraInizio:document.getElementById("formGridDataInizio").value+"T"+document.getElementById("formGridOraInizio").value,
@@ -52,6 +70,9 @@ import '../Generali/Generali/bordi.css'
                     setShow(true)
                 }
             }        
+            if(JSON.parse(window.sessionStorage.getItem("datiprenotazione"))){
+                setShow2(true)
+            }
         },[])
 
     return(
@@ -130,6 +151,19 @@ import '../Generali/Generali/bordi.css'
     </Button>
     </Form>
     </div>    
+
+    <PopupErrore
+            show={showerrore}
+            errore={errore}
+            onHide={()=>{setShowErrore(false)}}
+        />
+         <PopupSuccesso
+            show={show2}
+            onHide={() => {setShow2(false); window.sessionStorage.removeItem("datiprenotazione")}}  
+            onConfirm={()=>{setShow2(false); window.location.href="/SchermataRisultati"}}
+            titolo={"Prenotazione pendente"}
+            stringAttenzione={"C'è una prenotazione non completata, vuoi tornare alla schermata risultati?"}
+        />
     </div>
 
     )

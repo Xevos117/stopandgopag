@@ -1,6 +1,5 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Navbar from './Components/Generali/Generali/Navbar';
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import SchermataPrincipale from './Components/SchermataPrincipale/SchermataPrincipale';

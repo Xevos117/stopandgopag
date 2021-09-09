@@ -1,6 +1,7 @@
 import {Row,Col, Collapse, Button, Form} from "react-bootstrap"
 import {useState,useEffect} from 'react'
 import PopupSuccesso from "../Generali/Generali/PopupSuccesso"
+import PopupErrore from "../Generali/Generali/PopupErrore"
 const axios=require('axios')
 
   let stringabottone="Dettagli pagamento"
@@ -23,6 +24,7 @@ function SchermataPrenotazione(){
     const [open3, setOpen3] = useState(false);//indirizzodiverso
     const [show, setShow] = useState(false);  //per mostrare o nascondere il popupSuccesso
     const [show2, setShow2] = useState(false);  //per mostrare o nascondere il popupSuccesso per prenotazione
+    const [showErrore, setShowErrore] = useState(false)
 
     function handleChange(){
         let c=document.getElementById("opzioniconsegna").value
@@ -45,14 +47,27 @@ function SchermataPrenotazione(){
     }
 
     function recuperoDatiPagamento(){
+        console.log("Datipagamento")
         let id=JSON.parse(window.sessionStorage.getItem("utente")).IdUserid
         axios.post("http://localhost:5000/utente/recuperaDatiPagamento",{IdUserid:id},{withCredentials:true})
         .then((res)=>{
-            compilaform(res.data)
+            console.log(res.data.length)
+            if(res.data.length===0 && JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
+                setShowErrore(true)
+                return
+            }
+            else{
+                console.log("res.data.length")
+                compilaform(res.data)
+            }
+            
         })
         .catch((err)=>{
+
             console.log(err)
         })
+
+
         function compilaform(dati){
             let form=document.getElementById("metodopagamento")
             let option
@@ -120,8 +135,8 @@ function SchermataPrenotazione(){
             return ore*dati[1].Tariffa
         }
         else if(mese>=1){
-            let ore=30*24+differenzaore
-            return ore/2*dati[1].Tariffa
+            let ore=mese*30*24+differenzaore
+            return (ore/3)*dati[1].Tariffa
         }
         else{
             return differenzaore*dati[1].Tariffa
@@ -151,6 +166,7 @@ function SchermataPrenotazione(){
         let specifiche=JSON.parse(window.sessionStorage.getItem("specificheprenotazione"))
         let datiPrenotazione={
             idutente:JSON.parse(window.sessionStorage.getItem("utente")).IdUserid,
+            email:JSON.parse(window.sessionStorage.getItem("utente")).Email,
             idmezzo:specifiche[1].IdMezzo,
             idparcheggioritiro:document.getElementById("opzioniritiro").value,
             idparcheggioconsegna:document.getElementById("opzioniconsegna").value,
@@ -187,8 +203,7 @@ function SchermataPrenotazione(){
         .catch((err)=>{
             console.log(err)
         })
-        window.sessionStorage.removeItem("specificheprenotazione")
-        window.location.href="/SchermataGestionePrenotazioni"
+        setShow2(true)
     }
 
     
@@ -334,6 +349,11 @@ function SchermataPrenotazione(){
                                  
                                  
             </div>
+            <PopupErrore
+            show={showErrore}
+            errore={"Nessun dato pagamento rilevato. Inserirne uno prima di prenotare"}
+            onHide={()=>{setShow(false); window.location.href="/ListaDatiPagamento"}}
+            />
             <PopupSuccesso
                 id="popup"
                 show={show}     
@@ -345,8 +365,8 @@ function SchermataPrenotazione(){
             <PopupSuccesso
                 id="popupeffettuata"
                 show={show2}     
-                onHide={()=>{setShow2(false); /*window.sessionStorage.removeItem("specificheprenotazione"); window.location.href="/SchermataGestionePrenotazioni"*/}} 
-                onConfirm={()=>{setShow2(false); /*window.sessionStorage.removeItem("specificheprenotazione"); window.location.href="/SchermataGestionePrenotazioni"*/}}          
+                onHide={()=>{setShow2(false); window.sessionStorage.removeItem("specificheprenotazione"); window.location.href="/SchermataGestionePrenotazioni"}} 
+                onConfirm={()=>{setShow2(false); window.sessionStorage.removeItem("specificheprenotazione"); window.location.href="/SchermataGestionePrenotazioni"}}          
                 titolo={"Prenotazione effettuata!"}
                 stringAttenzione={"La sua prenotazione è stata inserita correttamente!"}
             />

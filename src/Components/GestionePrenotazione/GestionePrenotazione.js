@@ -115,6 +115,22 @@ function GestionePrenotazione(){
     }
 
     useEffect(()=>{
+        if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="GestoreParcheggio"){
+            setOpen(false)
+            setOpen2(true)
+            document.getElementById("avaria").disabled=true
+            document.getElementById("luogoconsegna").disabled=true
+            document.getElementById("ritardo").disabled=true
+            if(prenotazioneselezionata.CorsaAvviata===0){
+                document.getElementById("finecorsa").disabled=true
+            }            
+            else{
+                document.getElementById("finecorsa").disabled=false
+            }
+            if(prenotazioneselezionata.CorsaConclusa===1){
+                setOpen2(false)
+            }
+        }
         recuperaDatiParcheggi()
         verificaCorsa()
     },[])
@@ -126,7 +142,7 @@ function GestionePrenotazione(){
                 <Col>
                 <h2>Riepilogo {stringariepilogo}</h2>                 
                 <div>
-                <p><strong>Cliente: </strong>Alaimo</p>  
+                <p><strong>ID cliente: </strong>{prenotazioneselezionata.IdCliente}</p>  
                 <p><strong>Modello: </strong> {prenotazioneselezionata.Modello}</p>
                 <p><strong>Data e ora di ritiro: </strong>{new Date(prenotazioneselezionata.DataOraRitiro).toLocaleString()}</p> 
                 <p><strong>Data e ora di consegna: </strong>{new Date(prenotazioneselezionata.DataOraConsegnaProgrammata).toLocaleString()}</p> 
@@ -146,21 +162,21 @@ function GestionePrenotazione(){
                 <Collapse in={open2}>
                 <div id="opzionicorsa">
                     <Col>
-                    <Button variant="danger" style={{marginTop:10}} onClick={()=>{setOpen2(false);setOpen3(true)}}>
+                    <Button variant="danger" id="avaria"style={{marginTop:10}} onClick={()=>{setOpen2(false);setOpen3(true)}}>
                         Segnala avaria/incidente
                     </Button> 
                     </Col>
                     <Col> 
-                    <Button style={{marginTop:10}} onClick={()=>{setOpen2(false);setOpen4(true)}}>
+                    <Button style={{marginTop:10}} id="luogoconsegna" onClick={()=>{setOpen2(false);setOpen4(true)}}>
                         Modifica luogo di consegna
                     </Button> 
                     </Col>
                     <Col> 
-                    <Button variant="warning" style={{marginTop:10}} onClick={()=>{setOpen6(true);setOpen2(false)}}>
+                    <Button variant="warning" id="ritardo"style={{marginTop:10}} onClick={()=>{setOpen6(true);setOpen2(false)}}>
                         Segnala ritardo
                     </Button> 
                     </Col>
-                    <Button variant="success" style={{marginTop:10}} onClick={()=>{finisciCorsa()}}>
+                    <Button variant="success" id="finecorsa" style={{marginTop:10}} onClick={()=>{finisciCorsa()}}>
                         Conferma fine corsa
                     </Button>   
                     

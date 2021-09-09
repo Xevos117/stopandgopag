@@ -1,5 +1,5 @@
 import {Row, Form, Button, Col} from "react-bootstrap"
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 //import $ from "jquery"
 //import Feedback from "react-bootstrap/esm/Feedback";
 import PopupSuccesso from "../Generali/Generali/PopupSuccesso"
@@ -7,6 +7,7 @@ import PopupErrore from "../Generali/Generali/PopupErrore";
 import axios from "axios";
 import '../Generali/Generali/bordi.css'
 const crypto=require('crypto')
+
 
 function FormRegistrazioneMezzo(){
     const [validated, setValidated] = useState(false);
@@ -27,7 +28,8 @@ function FormRegistrazioneMezzo(){
 
         }
         else if(tipomezzo==="Moto"){
-            document.getElementById("modello").disabled=false
+            document.getElementById("modello").disabled=true
+            document.getElementById("modello").value=""
             document.getElementById("alimentazione").disabled=false
             document.getElementById("categoria").disabled=false
             document.getElementById("NumPosti").value="2"
@@ -38,6 +40,7 @@ function FormRegistrazioneMezzo(){
         }
         else if(tipomezzo==="Bicicletta" || tipomezzo==="Monopattino"){
             document.getElementById("modello").disabled=true
+            document.getElementById("modello").value=""
             document.getElementById("alimentazione").disabled=true
             document.getElementById("categoria").disabled=true
             document.getElementById("NumPosti").disabled=true
@@ -47,6 +50,31 @@ function FormRegistrazioneMezzo(){
 
 
         }
+    }
+    function recuperoParcheggi(){
+        axios.post("http://localhost:5000/mezzi/recuperaparcheggi")
+        .then((res)=>{
+            compilaform(res.data)
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+        function compilaform(dati){
+            let formritiro=document.getElementById("parcheggio")
+            console.log(dati)
+            let option
+            if(formritiro.length===0){
+                for(let i=0;i<dati.length;i++){
+                    console.log("qui")
+                    option=document.createElement("option")
+                    option.value=dati[i].IdParcheggioStallo
+                    option.id=dati[i].IdParcheggioStallo
+                    option.innerHTML=dati[i].DescParcheggioStallo
+                    console.log(option)
+                    formritiro.appendChild(option)
+                }                             
+            } 
+        }         
     }
 
     function inserisciDatiMezzo(event){
@@ -67,9 +95,7 @@ function FormRegistrazioneMezzo(){
                 descrizioneMezzo:  document.getElementById("descrizioneMezzo").value,
                 parc:  document.getElementById("parcheggio").value,
                 tariffaOraria:  document.getElementById("tariffa").value,
-                sovraprezzo:  document.getElementById("sovraprezzo").value,
-                fotoMezzo:  document.getElementById("fotoMezzo").value
-
+                sovraprezzo:  document.getElementById("sovraprezzo").value
             };
 
             try{
@@ -90,6 +116,10 @@ function FormRegistrazioneMezzo(){
             }
             }
         }
+
+        useEffect(()=>{
+            recuperoParcheggi()
+        })
     
     return(
     
@@ -120,7 +150,13 @@ function FormRegistrazioneMezzo(){
     <Row className="mb-3">
         <Form.Group as={Col} controlId="modello">
         <Form.Label><strong>Modello</strong></Form.Label>
-        <Form.Control type="text" placeholder="Inserisci modello" />
+        <select className="form-select mb3" id="modello" required>
+        <option value=""></option>
+        <option value="Fiat Panda">Fiat Panda</option>
+        <option value="Volkswagen Polo">Volkswagen Polo</option>
+        <option value="Opel Corsa">Opel Corsa</option>
+        <option value="Opel Crossland X">Opel Crossland X</option>
+        </select> 
         </Form.Group>
 
         <Form.Group as={Col} >
@@ -192,11 +228,7 @@ function FormRegistrazioneMezzo(){
     <Form.Group as={Col} controlId="parcheggio" >
         <Form.Label><strong>Stallo/Parcheggio</strong></Form.Label>
         <select className="form-select mb3" id="parcheggio">
-        <option selected="selected" value="">Stallo/Parcheggio</option>
-        <option value="1">Parc1</option>
-        <option value="2">stal1</option>
-        <option value="3">parc2</option>
-        <option value="4">stal2</option>
+        
         </select>    
             
       </Form.Group>
@@ -216,11 +248,6 @@ function FormRegistrazioneMezzo(){
 
     </Row>
     <Row className="mb-3">
-
-    <Form.Group controlId="fotoMezzo" className="mb-3">
-            <Form.Label><strong>Inserire allegato foto mezzo</strong></Form.Label>
-            <Form.Control type="file" size="sm" />
-        </Form.Group>
 
     </Row>
 

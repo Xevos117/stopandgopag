@@ -17,13 +17,18 @@ function Tabella(props){
         }
         for(let i=0; i<props.intestazioni.length; i++){
             let th=document.createElement("th")
+            if(props.modificaelimina==false){
+              if(props.intestazioni[i]==="Elimina" || props.intestazioni[i]==="Modifica"){
+                continue
+              }
+            }
             if(i==2 && props.seleziona===true){
                 th.innerHTML="Seleziona"                
                 let th2=document.createElement("th")
                 th2.innerHTML=props.intestazioni[i] 
                 thead.appendChild(th)
                 thead.appendChild(th2)
-            }
+            }           
             else{
             th.innerHTML=props.intestazioni[i]
             th.id=i+" Header"            
@@ -111,7 +116,7 @@ function Tabella(props){
             }
             else{
               button.innerHTML="Modifica" 
-            }
+            }            
             button.addEventListener('click',()=>{props.modifica(button.id)},false)
             tdbottone.appendChild(button)
             row.appendChild(tdbottone)            
@@ -164,7 +169,7 @@ function Tabella(props){
                   //EVIDENZIA CORSA AVVIATA MA NON CONCLUSA
                   row.style.backgroundColor="#ffffb3"
                 }
-                if(props.clientemode===true && props.righe[i][7]===1){
+                if((props.clientemode===true || props.modificaelimina===false) && props.righe[i][7]===1){
                   //EVIDENZIA CORSA AVVIATA e CONCLUSA
                   row.style.backgroundColor="#99ff99"
                 }
@@ -186,7 +191,7 @@ function Tabella(props){
 
     return(
         <div className="table-responsive" style={{paddingTop:20, paddingLeft:30, paddingRight:40}}>
-          d
+          
     <Table responsive striped bordered id="tabella">
                 <thead id="intestazioni">
                     <tr id="rigaIntestazioni">

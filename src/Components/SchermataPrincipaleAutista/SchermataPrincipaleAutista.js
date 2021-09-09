@@ -2,6 +2,20 @@
 import {CardGroup,Card, Button} from "react-bootstrap"
 
 function SchermataPrincipaleAutista(){
+  if(JSON.parse(window.sessionStorage.getItem("utente"))){
+    if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
+        window.location.href="/"
+    }        
+    else if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Amministratore"){
+        window.location.href="/SchermataPrincipaleAutista"
+    }
+    else if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="GestoreParcheggio"){
+        window.location.href="/SchermataPrincipaleGestoreParcheggio"
+    }
+}
+else{
+    window.location.href="/Login"
+}
     return(
         
         <body style={{backgroundImage: `url(${"../images/sfondoSchermate.jpg"})`}}> 

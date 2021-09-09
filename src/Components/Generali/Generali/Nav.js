@@ -2,6 +2,8 @@ import NavbarLoggato from "./NavbarLoggato"
 import NavbarAmministratore from "./NavbarAmministratore"
 import Navbar from "./Navbar"
 import NavbarAutista from "./NavbarAutista"
+import NavbarGestoreParcheggio from "./NavbarGestoreParcheggio"
+
 function Nav(){
     let utente=JSON.parse(window.sessionStorage.getItem("utente"))
     if(utente===null){
@@ -20,6 +22,12 @@ function Nav(){
         console.log("Cliente")
         return(
             <NavbarLoggato/>
+        )
+    }
+    else if(utente.Ruolo==="GestoreParcheggio"){
+        console.log("Gestore Parcheggio")
+        return(
+        <NavbarGestoreParcheggio/>
         )
     }
     else{

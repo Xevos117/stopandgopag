@@ -3,8 +3,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import PopupSuccesso from "./PopupSuccesso";
 import { useState } from "react";
 const axios=require('axios')
-function NavbarLoggato(){
+
+function NavbarGestoreParcheggio(){
   const[show,setShow]=useState(false)
+
 
   function logout(){
     let utente=JSON.parse(window.sessionStorage.getItem("utente"))
@@ -16,19 +18,21 @@ function NavbarLoggato(){
       console.log(err)
     })
   }
+
+
   return(
     <>    
     
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
   <Container>
   
-  <Navbar.Brand href="/SchermataPrincipaleGestoreParcheggio"><font color="blue" size="5">Stop And Go Pag</font></Navbar.Brand>
+  <Navbar.Brand href="/SchermataPrincipaleGestoreParcheggio"><font color="white" size="5">StopAndGoPag</font></Navbar.Brand>
   <Navbar.Toggle aria-controls="responsive-navbar-nav" />
   <Navbar.Collapse id="responsive-navbar-nav">
     <Nav className="me-auto">
       
       <Nav.Link href="/SchermataPersonaleUtente">Dati personali</Nav.Link>
-      <Nav.Link href="#LeMieCorse">Le mie corse</Nav.Link>
+      <Nav.Link href="/SchermataGestionePrenotazioni">Le mie corse</Nav.Link>
 
       
     </Nav>
@@ -55,4 +59,4 @@ function NavbarLoggato(){
   )
 }
 
-export default NavbarLoggato;
+export default NavbarGestoreParcheggio;

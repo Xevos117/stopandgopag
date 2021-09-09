@@ -13,8 +13,11 @@ let bottonecliccato
 function ListaPrenotazioni(){
   const [show, setShow] = useState(false);
   const [isloading, setLoading] = useState(true);
-  
-  
+  console.log("TABella")
+  const [modificaelimina, setModElimina]=useState(true)
+  const [disabled, setDisabled]=useState(false)
+
+
   function modifica(id){
     console.log(id)
     let c=document.getElementById(id)
@@ -59,6 +62,33 @@ if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
 
   useEffect(()=>{
     let idutente=JSON.parse(window.sessionStorage.getItem("utente")).IdUserid
+    console.log("TABELLA")
+    if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="GestoreParcheggio"){
+      setModElimina(false)
+      setDisabled(true)
+      console.log("Gestore parcheggio")
+      axios.post("http://localhost:5000/mezzi/recuperaparcheggi")
+        .then((res)=>{
+            for(let i=0; i<res.data.length;i++){
+              if(parseInt(res.data[i].Gestore)===idutente){
+                console.log("Trovato")
+                console.log(res.data[i])
+                axios.post("http://localhost:5000/prenotazioni/richiedicorseparcheggio",{id:res.data[i].IdParcheggioStallo})
+                .then((res)=>{
+                  console.log(res)
+                  mezzi=res.data
+                  setModElimina(false)
+                  jsontoarray()
+                  setTimeout(setLoading(false),1000)
+                }).catch((err)=>{
+                  console.log(err)
+                })
+              }
+            }
+        }).catch((err)=>{
+            console.log(err)
+        })      
+    }
     let dati
     if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Amministratore"){
       dati={id:"%"}
@@ -66,16 +96,19 @@ if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
     else{
       dati={id:idutente}
     }
-    axios.post("http://localhost:5000/prenotazioni/richiediprenotazioni",dati)
-    .then((res)=>{
-      console.log(res)
-      mezzi=res.data
-      console.log(mezzi)
-      jsontoarray()
-      setLoading(false)
-    }).catch((err)=>{
-      console.log(err)  
-    })
+    
+    if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo!=="GestoreParcheggio"){
+      axios.post("http://localhost:5000/prenotazioni/richiediprenotazioni",dati)
+      .then((res)=>{
+        console.log(res)
+        mezzi=res.data
+        console.log(mezzi)
+        jsontoarray()
+        setLoading(false)
+      }).catch((err)=>{
+        console.log(err)  
+      })
+    }
   },[])
 
   if(isloading){
@@ -87,18 +120,19 @@ if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
         <h1 style={{paddingLeft:30, paddingTop:40, paddingBottom:5}}>Lista Prenotazioni</h1>
 
         <div style={{paddingLeft:30}}>        
-          <Button href="/">Inserisci</Button>       
+          <Button href="/" id="inserisci" disabled={disabled}>Inserisci</Button>       
         </div>
 
         <Tabella 
         intestazioni={["Modifica","Elimina","Codice Prenotazione", "Codice Cliente", "Targa/Matricola mezzo","Data/ora inizio","Data/ora fine","Codice autista"]}
         righe={array}
         seleziona={true}
-        modificaelimina={true}
+        modificaelimina={modificaelimina}
         modifica={(id)=>{modifica(id)}}
         elimina={(id)=>{setShow(true);bottonecliccato=id}}
         selezionafunction={seleziona}
         clientemode={cliente}
+        
         />
         
 

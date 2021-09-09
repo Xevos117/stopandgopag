@@ -12,6 +12,8 @@ function FormRegistrazioneDipendente(){
     const [ errors, setErrors ] = useState({})
     const [show, setShow]=useState(false)
     const [show2, setShow2]=useState(false)
+
+   
     
     function handleSubmit(event){
         event.preventDefault();
@@ -242,7 +244,7 @@ function confrontoDate(){
     <PopupErrore
         show={show2}
         onHide={() => {setShow2(false)}}  
-        errore={"La mail è già presente nel database. Ricontrollare i dati inseriti"}
+        errore={"La mail o la carta di identita è già presente nel database. Ricontrollare i dati inseriti"}
     />
 
     <PopupSuccesso

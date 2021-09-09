@@ -3,8 +3,7 @@ import {useState} from 'react'
 //import $ from "jquery"
 import axios from "axios";
 import '../Generali/Generali/bordi.css'
-import PopupAttenzione from "../Generali/Generali/PopupAttenzione";
-
+import PopupSuccesso from "../Generali/Generali/PopupSuccesso";
 function ModificaDatoPagamento(props){
 
     const [validated, setValidated] = useState(false);
@@ -21,6 +20,7 @@ function ModificaDatoPagamento(props){
        
     function inserisciDatoPagamento(event){
         event.preventDefault();
+        setValidated(true)
         var form = document.getElementById("form");
         if(form.checkValidity()==true){
 
@@ -67,7 +67,7 @@ function ModificaDatoPagamento(props){
             <Row className="mb-3">
             <Form.Group as={Col} controlId="formGridNomeInt" >
                 <Form.Label><strong>Nome intestatario</strong></Form.Label>
-                <Form.Control type="text" placeholder="" required/>        
+                <Form.Control type="text" placeholder=""  required/>        
                 </Form.Group>
 
                 <Form.Group as={Col} controlId="formGridCognomeInt" >
@@ -80,7 +80,8 @@ function ModificaDatoPagamento(props){
             <Row className="mb-3">
             <Form.Group as={Col} controlId="formGridCarta" >
                 <Form.Label><strong>Carta di credito</strong></Form.Label>
-                <Form.Control type="text" placeholder="Inserisci la tua carta" required/>        
+                <Form.Control type="text" placeholder="Inserisci la tua carta" pattern="[0-9]{12,16}" required/>
+                <Form.Control.Feedback type="invalid">E' necessario inserire un numero valido da 12 a 16 cifre</Form.Control.Feedback>       
                 </Form.Group>
                 
             </Row>
@@ -88,8 +89,8 @@ function ModificaDatoPagamento(props){
 
         <Form.Group as={Col} >
         <Form.Label ><strong>Mese scadenza</strong></Form.Label>
-        <select className="form-select mb3" id="meseScad" >
-        <option selected="selected" value="">MM</option>
+        <select className="form-select mb3" id="meseScad" required>
+        <option selected="selected" value="" >MM</option>
         <option value="01">01</option>
         <option value="02">02</option>
         <option value="03">03</option>
@@ -109,7 +110,7 @@ function ModificaDatoPagamento(props){
       
       <Form.Group as={Col} controlId="annoScad" >
         <Form.Label><strong>Anno scadenza</strong></Form.Label>
-        <select className="form-select mb3" id="annoScad">
+        <select className="form-select mb3" id="annoScad" required>
         <option selected="selected" value="">AAAA</option>
         <option value="2021">2021</option>
         <option value="2022">2022</option>
@@ -137,7 +138,8 @@ function ModificaDatoPagamento(props){
 
       <Form.Group as={Col} controlId="formGridCVV" >
         <Form.Label><strong>CVV</strong></Form.Label>
-        <Form.Control type="text" placeholder="Inserisci il CVV" pattern="[0-9]{3}" required/>        
+        <Form.Control type="text" placeholder="Inserisci il CVV" pattern="[0-9]{3,4}" required/>  
+        <Form.Control.Feedback type="invalid">E' necessario inserire un cvv valido di 3 o 4 cifre</Form.Control.Feedback>       
         </Form.Group>
 
     </Row>
@@ -150,13 +152,14 @@ function ModificaDatoPagamento(props){
     </Form>
     </div>
 </center>
-<PopupAttenzione
-          show={show}
-          onHide={() => {setShow(false); window.location.href="/ListaDatiPagamento"}}  
-          onConfirm={()=>{setShow(false); window.location.href="/ListaDatiPagamento"}}
-          titolo={"Operazione completata"}
-          stringAttenzione={"La tua carta è stata aggiornata correttamente!"}
-        />
+
+        <PopupSuccesso
+        show={show}
+        onHide={() => {setShow(false); window.location.href="/ListaDatiPagamento"}}  
+        onConfirm={()=>{setShow(false); window.location.href="/ListaDatiPagamento"}}
+        titolo={"Operazione completata"}
+        stringAttenzione={"Registrazione effettuata correttamente"}
+    />
 </div>
     )
 }

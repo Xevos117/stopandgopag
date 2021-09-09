@@ -34,10 +34,10 @@ function ListaCorse(){
       axios.post("http://localhost:5000/prenotazioni/rifiutacorsa",{idPrenotazione:idPrenotazione})
       .then((res)=>{
         console.log(res)
+        window.location.reload()
       }).catch((err)=>{
         console.log(err)
       })
-      window.location.reload()
     }
 
     function accetta(id){
@@ -51,10 +51,10 @@ function ListaCorse(){
       axios.post("http://localhost:5000/prenotazioni/accettacorsa",{idAutistaPrenotazioni:mezzi[idriga].IdAutistaPrenotazioni, idAutista:mezzi[idriga].IdAutistaPreassegnato, idPrenotazione:idPrenotazione})
       .then((res)=>{
         console.log(res)
+        window.location.reload()
       }).catch((err)=>{
         console.log(err)
       })
-      window.location.reload()
     }
 
     function seleziona(id){

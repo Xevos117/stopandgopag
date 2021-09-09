@@ -8,9 +8,11 @@ function NavbarLoggato(){
   const[show,setShow]=useState(false)
 
   function logout(){
+    console.log("Logout")
     let utente=JSON.parse(window.sessionStorage.getItem("utente"))
     axios.post("http://localhost:5000/utente/logout",utente,{withCredentials:true})
     .then((res)=>{
+      console.log(res)
         window.sessionStorage.removeItem("utente")
         setShow(true)    
       }).catch((err)=>{
@@ -24,16 +26,13 @@ function NavbarLoggato(){
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
   <Container>
   
-  <Navbar.Brand href="/SchermataPrincipaleCliente"><font color="blue" size="5">Stop And Go Pag</font></Navbar.Brand>
+  <Navbar.Brand href="/SchermataPrincipaleCliente"><font color="white" size="5">StopAndGoPag</font></Navbar.Brand>
   <Navbar.Toggle aria-controls="responsive-navbar-nav" />
   <Navbar.Collapse id="responsive-navbar-nav">
-    <Nav className="me-auto">
-      
+    <Nav className="me-auto">      
       <Nav.Link href="/SchermataPersonaleUtente">Dati personali</Nav.Link>
       <Nav.Link href="/ListaDatiPagamento">Dati pagamento</Nav.Link>
-      <Nav.Link href="/SchermataGestionePrenotazioni">Le mie prenotazioni</Nav.Link>
-
-      
+      <Nav.Link href="/SchermataGestionePrenotazioni">Le mie prenotazioni</Nav.Link>      
     </Nav>
     <Nav>
      

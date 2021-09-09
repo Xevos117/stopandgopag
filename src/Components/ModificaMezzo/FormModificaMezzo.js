@@ -131,6 +131,32 @@ function FormRegistrazioneMezzo(){
             }
         }
 
+        function recuperoParcheggi(){
+            axios.post("http://localhost:5000/mezzi/recuperaparcheggi")
+            .then((res)=>{
+                compilaform(res.data)
+            })
+            .catch((err)=>{
+                console.log(err)
+            })
+            function compilaform(dati){
+                let formritiro=document.getElementById("parcheggio")
+                console.log(dati)
+                let option
+                if(formritiro.length===0){
+                    for(let i=0;i<dati.length;i++){
+                        console.log("qui")
+                        option=document.createElement("option")
+                        option.value=dati[i].IdParcheggioStallo
+                        option.id=dati[i].IdParcheggioStallo
+                        option.innerHTML=dati[i].DescParcheggioStallo
+                        console.log(option)
+                        formritiro.appendChild(option)
+                    }                             
+                } 
+            }         
+        }
+
         useEffect(()=>{
             axios.post("http://localhost:5000/mezzi/RecuperaDatiMezzi")
                 .then((res)=>{
@@ -138,7 +164,8 @@ function FormRegistrazioneMezzo(){
                     precompilaForm(res.data)
                 }).catch(err=>{
                     console.log(err)
-                })   
+                }) 
+                recuperoParcheggi()  
         })
     
     return(
@@ -152,13 +179,12 @@ function FormRegistrazioneMezzo(){
 
 <Form.Group as={Col} controlId="tipoMezzo">
     <Form.Label ><strong>Tipologia mezzo</strong></Form.Label>
-    <select className="form-select mb3" id="tipoMezzo" onChange={formPersonalizzato} required>
+    <select className="form-select mb3" id="tipoMezzo" onChange={formPersonalizzato} required disabled>
     <option value="Auto">Auto</option>
     <option value="Moto">Moto</option>
     <option value="Bicicletta">Bicicletta</option>
     <option value="Monopattino">Monopattino</option>
     </select>    
-        
   </Form.Group>
 
     <Form.Group as={Col} controlId="targa">
@@ -170,8 +196,14 @@ function FormRegistrazioneMezzo(){
 <Row className="mb-3">
     <Form.Group as={Col} controlId="modello">
     <Form.Label><strong>Modello</strong></Form.Label>
-    <Form.Control type="text" placeholder="Inserisci modello" />
-    </Form.Group>
+    <select className="form-select mb3" id="modello" required>
+        <option value=""></option>
+        <option value="Fiat Panda">Fiat Panda</option>
+        <option value="Volkswagen Polo">Volkswagen Polo</option>
+        <option value="Opel Corsa">Opel Corsa</option>
+        <option value="Opel Crossland X">Opel Crossland X</option>
+        </select> 
+            </Form.Group>
 
     <Form.Group as={Col} >
     <Form.Label><strong>Alimentazione</strong></Form.Label>
@@ -242,11 +274,7 @@ function FormRegistrazioneMezzo(){
 <Form.Group as={Col} controlId="parcheggio" >
     <Form.Label><strong>Stallo/Parcheggio</strong></Form.Label>
     <select className="form-select mb3" id="parcheggio">
-    <option selected="selected" value="">Stallo/Parcheggio</option>
-    <option value="1">Parc1</option>
-    <option value="2">stal1</option>
-    <option value="3">parc2</option>
-    <option value="4">stal2</option>
+    
     </select>    
         
   </Form.Group>

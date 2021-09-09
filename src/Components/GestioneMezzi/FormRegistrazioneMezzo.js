@@ -87,7 +87,13 @@ function FormRegistrazioneMezzo(){
     <Row className="mb-3">
         <Form.Group as={Col} controlId="modello">
         <Form.Label><strong>Modello</strong></Form.Label>
-        <Form.Control type="text" placeholder="Inserisci modello" />
+        <select className="form-select mb3" id="modello" required>
+        <option value="1" selected>Scegli un modello</option>
+        <option value="Fiat Panda">Fiat Panda</option>
+        <option value="Volkswagen Polo">Volkswagen Polo</option>
+        <option value="Opel Corsa">Opel Corsa</option>
+        <option value="Opel Crossland X">Opel Crossland X</option>
+        </select>   
         </Form.Group>
 
         <Form.Group as={Col} controlId="alimentazione">

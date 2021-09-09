@@ -9,7 +9,21 @@ let errore
 
 function FormLogin(){
     const [show, setShow] = useState(false);  //per mostrare o nascondere il popup
-
+    if(JSON.parse(window.sessionStorage.getItem("utente"))){
+        if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Cliente"){
+            window.location.href="/"
+        }
+        else if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Amministratore"){
+            window.location.href="/SchermataPrincipaleAmministratore"
+        }
+        else if(JSON.parse(window.sessionStorage.getItem("utente")).Ruolo==="Autista"){
+            window.location.href="/SchermataPrincipaleAutista"
+        }
+        else{
+            window.location.href="/SchermataPrincipaleGestoreParcheggio"
+        }
+    }
+    
     function login(){
         let crypass= crypto.createHash('sha512');
         crypass.update(document.getElementById("formBasicPassword").value); // criptiamo la password
@@ -19,7 +33,7 @@ function FormLogin(){
             password:passEsa
         }
         console.log(utentelogin)
-        axios.post("https://3.130.208.226:5000/utente/utenteLogin",utentelogin,{withCredentials:true})
+        axios.post("http://localhost:5000/utente/utenteLogin",utentelogin,{withCredentials:true})
         .then((res)=>{
             console.log(res.data.Ruolo)
             window.sessionStorage.setItem("utente", JSON.stringify(res.data));
